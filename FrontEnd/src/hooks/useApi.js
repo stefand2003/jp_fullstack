@@ -1,9 +1,20 @@
 import axios from 'axios';
 import { parseErrors } from '../utils/parseErrors';
+import { useCookie } from './useCookie';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const useApi = () => {
+  const { getAuthCookie } = useCookie();
+
+  const token = getAuthCookie();
+
+  if (token) {
+    axios.defaults.headers.common[
+      'Authorization'
+    ] = `Bearer ${getAuthCookie()}`;
+  }
+
   const request = async (endpoint, options = {}) => {
     try {
       const res = await axios({
