@@ -838,6 +838,7 @@ export interface ApiJobTypeJobType extends Schema.CollectionType {
     singularName: 'job-type';
     pluralName: 'job-types';
     displayName: 'JobType';
+    description: '';
   };
   options: {
     draftAndPublish: true;
@@ -873,14 +874,15 @@ export interface ApiSectorSector extends Schema.CollectionType {
     singularName: 'sector';
     pluralName: 'sectors';
     displayName: 'Sector';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
     title: Attribute.String;
-    small_Image: Attribute.Media;
-    big_Image: Attribute.Media;
+    small_image: Attribute.Media;
+    big_image: Attribute.Media;
     categories: Attribute.Relation<
       'api::sector.sector',
       'oneToMany',
