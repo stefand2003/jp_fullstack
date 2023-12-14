@@ -1,3 +1,3 @@
 module.exports = {
-  routes: [{ method: 'GET', path: '/jobs', handler: 'jobs.find' }],
+  routes: [{ method: 'GET', path: '/jobs', handler: 'job.find' }],
 };
