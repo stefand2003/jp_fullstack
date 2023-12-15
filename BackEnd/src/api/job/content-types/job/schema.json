@@ -45,6 +45,17 @@
       "relation": "manyToOne",
       "target": "api::category.category",
       "inversedBy": "jobs"
+    },
+    "location": {
+      "type": "enumeration",
+      "enum": [
+        "Bath",
+        "Doncaster",
+        "Sheffield",
+        "Nottingham",
+        "London",
+        "Oxford"
+      ]
     }
   }
 }
