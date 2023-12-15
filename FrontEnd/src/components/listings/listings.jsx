@@ -3,8 +3,10 @@ import './listings.scss';
 
 import Paginate from '../paginate/paginate';
 
-import { StarSaved, Money, Location, Timer } from '../images';
+import { StarSaved, StarUnsaved, Money, Location, Timer } from '../images';
 import { useApi } from '../../hooks/useApi';
+
+import ConfirmationModal from '../confirm_modal/confirm_modal';
 
 const MAX_PER_PAGE = 3;
 const MAX_LENGTH_CHARS = 200;
@@ -12,6 +14,9 @@ const MAX_LENGTH_CHARS = 200;
 export default function listings() {
   const [jobs, setJobs] = useState([]);
   const [meta, setMeta] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [jobToSave, setJobToSave] = useState(null);
+
   const { get } = useApi();
 
   const handleSuccess = (res) => {
@@ -63,6 +68,20 @@ export default function listings() {
     setJobs(updatedJobs);
   };
 
+  const showModal = (job) => {
+    setJobToSave(job);
+    setIsModalOpen(true);
+  };
+
+  const hideModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const acceptModal = () => {
+    console.log('Accept save the job:', jobToSave);
+    hideModal();
+  };
+
   useEffect(() => {
     fetchJobs();
   }, []);
@@ -72,50 +91,63 @@ export default function listings() {
   };
 
   return (
-    <section>
-      {jobs.map((job) => {
-        return (
-          <div key={job.id} className='listing__card'>
-            <header className='listing__header'>
-              <h1 className='listing__title'>{job.title}</h1>
-              <img className='listing__saved' src={StarSaved} alt='' />
-              <p className='listing__company'>
-                Posted by <span>{job.company.name}</span>
+    <>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={hideModal}
+        onAccept={acceptModal}
+        text='Would you like to save this job?'
+      />
+      <section>
+        {jobs.map((job) => {
+          return (
+            <div key={job.id} className='listing__card'>
+              <header className='listing__header'>
+                <h1 className='listing__title'>{job.title}</h1>
+                <img
+                  className='listing__saved'
+                  src={StarUnsaved}
+                  alt=''
+                  onClick={() => showModal(job)}
+                />
+                <p className='listing__company'>
+                  Posted by <span>{job.company.name}</span>
+                </p>
+              </header>
+
+              <ul className='listing__items'>
+                <li>
+                  <img src={Money} alt='' />
+                  <b>Salary {job.salaryType}</b>
+                </li>
+                <li>
+                  <img src={Location} alt='' />
+                  <b>{job.location}</b>
+                </li>
+                <li>
+                  <img src={Timer} alt='' />
+                  {job.job_types.map((type) => {
+                    return <span key={type.id}>{type.title}</span>;
+                  })}
+                </li>
+              </ul>
+
+              <p className='listing__detail'>
+                {truncate(job.description, job.id)}
+                <a onClick={() => toggleTruncate(job.id)}>
+                  <b>{job.isTruncated ? 'Read more' : 'Read less'}</b>
+                </a>
               </p>
-            </header>
 
-            <ul className='listing__items'>
-              <li>
-                <img src={Money} alt='' />
-                <b>Salary {job.salaryType}</b>
-              </li>
-              <li>
-                <img src={Location} alt='' />
-                <b>{job.location}</b>
-              </li>
-              <li>
-                <img src={Timer} alt='' />
-                {job.job_types.map((type) => {
-                  return <span key={type.id}>{type.title}</span>;
-                })}
-              </li>
-            </ul>
-
-            <p className='listing__detail'>
-              {truncate(job.description, job.id)}
-              <a onClick={() => toggleTruncate(job.id)}>
-                <b>{job.isTruncated ? 'Read more' : 'Read less'}</b>
+              <a href='' className='listing__cta'>
+                Withdraw application
               </a>
-            </p>
+            </div>
+          );
+        })}
 
-            <a href='' className='listing__cta'>
-              Withdraw application
-            </a>
-          </div>
-        );
-      })}
-
-      <Paginate meta={meta.paginate} onPageChange={handlePageChange} />
-    </section>
+        <Paginate meta={meta.paginate} onPageChange={handlePageChange} />
+      </section>
+    </>
   );
 }
